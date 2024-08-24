@@ -1,0 +1,11 @@
+---
+title: "geospatialanalytics"
+---
+
+Welcome to geospatial analytics and applications.
+
+The website demonstrate my coursework and solutions.
+
+```{r}
+1 + 1
+```
