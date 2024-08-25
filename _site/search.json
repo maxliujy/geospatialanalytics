@@ -481,5 +481,103 @@
     "title": "Hands-on Exercise 1.2",
     "section": "Using tmap_arrange() for Stand-alone Maps",
     "text": "Using tmap_arrange() for Stand-alone Maps\n\nyoungmap &lt;- tm_shape(mpsz_pop2020) + \n  tm_polygons(\"YOUNG\", style = \"quantile\", palette = \"Blues\")\n\nagedmap &lt;- tm_shape(mpsz_pop2020) + \n  tm_polygons(\"AGED\", style = \"quantile\", palette = \"Blues\")\n\ntmap_arrange(youngmap, agedmap, asp = 1, ncol = 2)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html",
+    "href": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html",
+    "title": "Hands-on Exercise 1.2",
+    "section": "",
+    "text": "In this exercise, we will use the `tmap` package along with four other key R packages: - `readr` for importing delimited text files, - `tidyr` for tidying data, - `dplyr` for data wrangling, - `sf` for handling geospatial data."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#the-data",
+    "href": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#the-data",
+    "title": "Hands-on Exercise 1.2",
+    "section": "The Data",
+    "text": "The Data\nTwo datasets will be used to create the choropleth map:\n\nMaster Plan 2014 Subzone Boundary (Web): This is a geospatial dataset in ESRI shapefile format, containing the geographical boundaries of Singapore at the planning subzone level.\nSingapore Residents by Planning Area / Subzone, Age Group, Sex, and Type of Dwelling, June 2011-2020: This is an aspatial dataset in CSV format, which can be linked to the shapefile using the PA and SZ fields as unique identifiers."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#importing-geospatial-data-into-r",
+    "href": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#importing-geospatial-data-into-r",
+    "title": "Hands-on Exercise 1.2",
+    "section": "Importing Geospatial Data into R",
+    "text": "Importing Geospatial Data into R\n\nInstall and load necessary packages\n{r} pacman::p_load(sf, tidyverse, dplyr, tmap)}\nThe p_load function from the pacman package is used to install and load the sf and tidyverse packages into the R environment.\n{r} mpsz &lt;- st_read(dsn = \"data/geospatial\", layer = \"MP14_SUBZONE_WEB_PL\")}\nYou can examine the content of the imported geospatial data:\n{r} mpsz}"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#importing-attribute-data-into-r",
+    "href": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#importing-attribute-data-into-r",
+    "title": "Hands-on Exercise 1.2",
+    "section": "Importing Attribute Data into R",
+    "text": "Importing Attribute Data into R\nNext, we import the CSV file into R and save it as a data frame:\n{r} popdata &lt;- read_csv(\"data/aspatial/respopagesextod2011to2020.csv\")}"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#quick-choropleth-mapping-with-qtm",
+    "href": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#quick-choropleth-mapping-with-qtm",
+    "title": "Hands-on Exercise 1.2",
+    "section": "Quick Choropleth Mapping with qtm()",
+    "text": "Quick Choropleth Mapping with qtm()\nThe qtm() function allows you to quickly draw a choropleth map:\n{r} tmap_mode(\"plot\") qtm(mpsz_pop2020, fill = \"DEPENDENCY\")}"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#custom-choropleth-mapping-with-tmap-elements",
+    "href": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#custom-choropleth-mapping-with-tmap-elements",
+    "title": "Hands-on Exercise 1.2",
+    "section": "Custom Choropleth Mapping with tmap Elements",
+    "text": "Custom Choropleth Mapping with tmap Elements\nTo create a more customized map, use tmap’s drawing elements:\n{r} tm_shape(mpsz_pop2020) +   tm_fill(\"DEPENDENCY\", style = \"quantile\", palette = \"Blues\", title = \"Dependency ratio\") +   tm_layout(main.title = \"Distribution of Dependency Ratio by planning subzone\",             main.title.position = \"center\",             main.title.size = 1.2,             legend.height = 0.45,              legend.width = 0.35,             frame = TRUE) +   tm_borders(alpha = 0.5) +   tm_compass(type = \"8star\", size = 2) +   tm_scale_bar() +   tm_grid(alpha = 0.2) +   tm_credits(\"Source: Planning Sub-zone boundary from URA and Population data from DOS\",               position = c(\"left\", \"bottom\"))}"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#built-in-classification-methods",
+    "href": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#built-in-classification-methods",
+    "title": "Hands-on Exercise 1.2",
+    "section": "Built-in Classification Methods",
+    "text": "Built-in Classification Methods\ntmap provides ten classification methods. Here’s how to apply the quantile and equal methods:\n{r} tm_shape(mpsz_pop2020) +   tm_fill(\"DEPENDENCY\", n = 5, style = \"quantile\") +   tm_borders(alpha = 0.5)  tm_shape(mpsz_pop2020) +   tm_fill(\"DEPENDENCY\", n = 5, style = \"equal\") +   tm_borders(alpha = 0.5)}"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#custom-breaks",
+    "href": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#custom-breaks",
+    "title": "Hands-on Exercise 1.2",
+    "section": "Custom Breaks",
+    "text": "Custom Breaks\nYou can define custom breakpoints for the classification:\n{r} summary(mpsz_pop2020$DEPENDENCY)  tm_shape(mpsz_pop2020) +   tm_fill(\"DEPENDENCY\", breaks = c(0, 0.60, 0.70, 0.80, 0.90, 1.00)) +   tm_borders(alpha = 0.5)}"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#using-colorbrewer-palettes",
+    "href": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#using-colorbrewer-palettes",
+    "title": "Hands-on Exercise 1.2",
+    "section": "Using ColorBrewer Palettes",
+    "text": "Using ColorBrewer Palettes\nTo change the color scheme, use the palette argument:\n{r} tm_shape(mpsz_pop2020) +   tm_fill(\"DEPENDENCY\", n = 6, style = \"quantile\", palette = \"Blues\") +   tm_borders(alpha = 0.5)}\nTo reverse the color scheme:\n{r} tm_shape(mpsz_pop2020) +   tm_fill(\"DEPENDENCY\", style = \"quantile\", palette = \"-Greens\") +   tm_borders(alpha = 0.5)}"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#map-legend",
+    "href": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#map-legend",
+    "title": "Hands-on Exercise 1.2",
+    "section": "Map Legend",
+    "text": "Map Legend\nCustomize the map legend:\n{r}   tm_shape(mpsz_pop2020) +   tm_fill(\"DEPENDENCY\", style = \"jenks\", palette = \"Blues\",            legend.hist = TRUE, legend.is.portrait = TRUE, legend.hist.z = 0.1) +   tm_layout(main.title = \"Distribution of Dependency Ratio by planning subzone (Jenks classification)\",             main.title.position = \"center\",             main.title.size = 1,             legend.height = 0.45,              legend.width = 0.35,             legend.outside = FALSE,             legend.position = c(\"right\", \"bottom\"),             frame = FALSE) +   tm_borders(alpha = 0.5)}"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#map-style-and-cartographic-furniture",
+    "href": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#map-style-and-cartographic-furniture",
+    "title": "Hands-on Exercise 1.2",
+    "section": "Map Style and Cartographic Furniture",
+    "text": "Map Style and Cartographic Furniture\nChange the map style and add elements like a compass and scale bar:\n{r} tm_shape(mpsz_pop2020)+   tm_fill(\"DEPENDENCY\",            style = \"quantile\",            palette = \"Blues\",           title = \"No. of persons\") +   tm_layout(main.title = \"Distribution of Dependency Ratio \\nby planning subzone\",             main.title.position = \"center\",             main.title.size = 1.2,             legend.height = 0.45,              legend.width = 0.35,             frame = TRUE) +   tm_borders(alpha = 0.5) +   tm_compass(type=\"8star\", size = 2) +   tm_scale_bar(width = 0.15) +   tm_grid(lwd = 0.1, alpha = 0.2) +   tm_credits(\"Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)\\n and Population data from Department of Statistics DOS\",               position = c(\"left\", \"bottom\"))}\nReset the default style:\n{r} tmap_style(\"white\")}"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#using-multiple-aesthetic-arguments",
+    "href": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#using-multiple-aesthetic-arguments",
+    "title": "Hands-on Exercise 1.2",
+    "section": "Using Multiple Aesthetic Arguments",
+    "text": "Using Multiple Aesthetic Arguments\n{r} tm_shape(mpsz_pop2020) +   tm_fill(c(\"YOUNG\", \"AGED\"), style = \"equal\", palette = \"Blues\") +   tm_layout(legend.position = c(\"right\", \"bottom\")) +   tm_borders(alpha = 0.5)}"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#using-tm_facets-for-grouped-maps",
+    "href": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#using-tm_facets-for-grouped-maps",
+    "title": "Hands-on Exercise 1.2",
+    "section": "Using tm_facets() for Grouped Maps",
+    "text": "Using tm_facets() for Grouped Maps\n{r} tm_shape(mpsz_pop2020) +   tm_fill(\"DEPENDENCY\", style = \"quantile\", palette = \"Blues\", thres.poly = 0) +    tm_facets(by = \"REGION_N\", free.coords = TRUE, drop.shapes = TRUE) +   tm_layout(legend.show = FALSE, title.position = c(\"center\", \"center\"), title.size = 20) +   tm_borders(alpha = 0.5)}"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#using-tmap_arrange-for-stand-alone-maps",
+    "href": "Hands-on_Ex/Hands-on_Ex1.2/Hands-on_Ex1.2.html#using-tmap_arrange-for-stand-alone-maps",
+    "title": "Hands-on Exercise 1.2",
+    "section": "Using tmap_arrange() for Stand-alone Maps",
+    "text": "Using tmap_arrange() for Stand-alone Maps\n{r} youngmap &lt;- tm_shape(mpsz_pop2020) +    tm_polygons(\"YOUNG\", style = \"quantile\", palette = \"Blues\")  agedmap &lt;- tm_shape(mpsz_pop2020) +    tm_polygons(\"AGED\", style = \"quantile\", palette = \"Blues\")  tmap_arrange(youngmap, agedmap, asp = 1, ncol = 2)}"
   }
 ]
