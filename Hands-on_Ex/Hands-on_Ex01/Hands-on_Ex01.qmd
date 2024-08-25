@@ -3,19 +3,210 @@ title: "Hands-on Exercise 1"
 author: "liujianying"
 ---
 
-# Getting started
+# Introduction
 
-## Install and launching R packages
+This assignment demonstrates the application of geospatial data science techniques using R. The task involves importing, processing, and analyzing geospatial and aspatial data using R packages such as `sf` and `tidyverse`. The analysis is documented in this report, which includes code snippets, outputs, and explanations.
 
-The code chunk below uses p_load() of pacman package to check if tidyverse packages are installed in the computer. If they are, then they will be launched into R.
+# Learning Outcomes
+
+By completing this assignment, you will learn to:
+
+- Install and load necessary R packages (`sf`, `tidyverse`).
+- Import and manage geospatial data.
+- Convert and transform data coordinate systems.
+- Perform geospatial data processing and visualization.
+- Conduct exploratory data analysis (EDA) using `ggplot2`.
+
+# Data Acquisition
+
+## Geospatial Data
+
+Data used for this assignment are sourced from publicly available datasets:
+
+- **Master Plan 2014 Subzone Boundary (Web)** from [data.gov.sg](https://data.gov.sg/)
+- **Pre-Schools Location** from [data.gov.sg](https://data.gov.sg/)
+- **Cycling Path** from [LTADataMall](https://www.lta.gov.sg/content/ltagov/en/industry_innovations/industry_matters/datamall.html)
+- **Singapore Airbnb listing data** from [Inside Airbnb](http://insideairbnb.com/get-the-data.html)
+
+
+# Getting Started
+
+### Install and load necessary packages
 
 ```{r}
-#| eval: false
-pacman::p_load(tidyverse)
+
+pacman::p_load(sf, tidyverse, dplyr)
+```
+The p_load function from the pacman package is used to install and load the sf and tidyverse packages into the R environment.
+
+### Importing Geospatial Data
+In this section, geospatial data are imported using the sf package:
+
+### Import polygon feature data
+
+```{r}
+#| echo: false
+mpsz <- st_read(dsn = "data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
+
 ```
 
-Importing the data
+
+
+
+
+### Import polyline feature data
+
+```{r}
+#| echo: false
+cyclingpath <- st_read(dsn = "data/geospatial", layer = "CyclingPathGazette")
+
+```
+
+
+### Import GIS data in KML format
+```{r}
+
+preschool <- st_read("data/geospatial/PreSchoolsLocation.kml")
+
+```
+
+# Data Exploration and Visualization
+## Checking the Content of the Data Frame
+### Geometry Information
+
 
 ```{r}
 
+# Retrieve geometry list-column
+st_geometry(mpsz)
+
 ```
+### Data Structure
+```{r}
+
+# Get a glimpse of the data
+glimpse(mpsz)
+```
+
+### Plotting Geospatial Data
+
+
+```{r}
+
+# Default plot of an sf object
+plot(mpsz, max.plot =15)
+
+# Plot only the geometry
+plot(st_geometry(mpsz))
+
+# Plot using a specific attribute
+plot(mpsz["PLN_AREA_N"])
+
+```
+
+# Working with Projections
+## Assigning and Transforming Projections
+
+
+```{r}
+
+# Default plot of an sf object
+# Assign correct EPSG code
+mpsz3414 <- st_set_crs(mpsz, 3414)
+
+# Transform projection for preschool data
+preschool3414 <- st_transform(preschool, crs = 3414)
+```
+
+
+# Importing and Converting Aspatial Data
+## Importing CSV Data
+
+
+```{r}
+
+# Import aspatial data
+listings <- read_csv("data/aspatial/listings.csv")
+list(listings)
+```
+## Convert aspatial data to sf data frame
+
+
+```{r}
+
+# Convert aspatial data to sf data frame
+listings_sf <- st_as_sf(listings, coords = c("longitude", "latitude"), crs = 4326) %>%
+  st_transform(crs = 3414)
+glimpse(listings_sf)
+```
+
+# Geoprocessing with sf Package
+## Buffering
+
+
+
+```{r}
+
+# Compute 5-meter buffers around cycling paths
+buffer_cycling <- st_buffer(cyclingpath, dist = 5, nQuadSegs = 30)
+
+# Calculate the area of the buffers
+buffer_cycling$AREA <- st_area(buffer_cycling)
+
+# Derive the total land area
+total_area <- sum(buffer_cycling$AREA)
+total_area
+```
+## Point-in-Polygon Count
+
+
+```{r}
+
+# Count the number of pre-schools in each planning subzone
+mpsz3414$`PreSch Count` <- lengths(st_intersects(mpsz3414, preschool3414))
+
+summary(mpsz3414$`PreSch Count`)
+
+# Planning subzone with the most number of pre-schools
+top_n(mpsz3414, 1, `PreSch Count`)
+
+#calculating the density of pre-school by planning subzone
+mpsz3414$Area <- mpsz3414 %>%
+  st_area()
+
+#compute pre-schoold density 
+
+mpsz3414 <- mpsz3414 %>%
+  mutate(`PreSch Density` = `PreSch Count`/Area * 1000000)
+```
+
+# Exploratory Data Analysis (EDA)
+## Histogram of Pre-School Density
+
+
+```{r}
+
+# Plot histogram with ggplot2
+ggplot(data = mpsz3414, aes(x = as.numeric(`PreSch Density`))) +
+  geom_histogram(bins = 20, color = "black", fill = "light blue") +
+  labs(title = "Are pre-schools evenly distributed in Singapore?",
+       subtitle = "Distribution of pre-schools across planning sub-zones",
+       x = "Pre-school density (per km sq)",
+       y = "Frequency")
+```
+
+## Scatterplot of Pre-school Density vs. Count
+```{r}
+
+# Plot histogram with ggplot2
+ggplot(data = mpsz3414, aes(y = `PreSch Count`, x = as.numeric(`PreSch Density`))) +
+  geom_point(color = "black", fill = "light blue") +
+  xlim(0, 40) +
+  ylim(0, 40) +
+  labs(x = "Pre-school density (per km sq)", y = "Pre-school count")
+
+```
+
+# Conclusion
+This assignment has demonstrated essential geospatial data science tasks in R, including data importation, projection transformations, geospatial processing, and exploratory data analysis. The results provide insights into the spatial distribution of pre-schools in Singapore.
+
