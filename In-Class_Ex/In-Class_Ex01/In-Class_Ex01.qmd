@@ -11,40 +11,63 @@ execute:
   freeze: true
 ---
 
-Install packages..
+# Getting started
+
+### Install and load necessary packages
 
 ```{r}
 pacman::p_load(sf, tidyverse, dplyr, tmap)
+
 ```
 
-Task 1 #read kml file and ship file of master plan 2014 into the dataframe .asdf
+The p_load function from the pacman package is used to install and load the sf and tidyverse packages into the R environment.
+
+### Task 1 read kml file and ship file of master plan 2014 
 
 ```{r}
-mpsz <- st_read(dsn = "data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
+mpsz14_shp <- st_read(dsn = "data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
 ```
 
 ```{r}
-#to write into a clean file
-#st_write(mpsz14_shp,"data/geospatial/MP14_SUBZONE_WEB_PL.kml",delete_dsn=TRUE)
+#to write into a clean file since the online one is corrupted currently
+st_write(mpsz14_shp,"data/geospatial/MP14_SUBZONE_WEB_PL.kml", delete_dsn=TRUE)
 ```
 
-MasterPlan2019SubzoneBoundaryNoSeaKML
+### Task 2 read kml file and ship file of master plan 2019
 
 ```{r}
 mpsz2019_kml <- st_read("data/geospatial/MasterPlan2019SubzoneBoundaryNoSeaKML.kml")
 ```
 
 ```{r}
-mpsz2019_kml <- st_read("data/geospatial/MasterPlan2019SubzoneBoundaryNoSeaKML.kml")
-
-```
-
-```{r}
-#cannot find the shp file online
 #transformation of coordinate system
-#mpsz2019_shp <- st_read(dsn = "data/", layer = "MPSZ-2019") %>%
-#st_transform(crs = 3414)
-#)
+mpsz2019_shp <- st_read(dsn = "data/geospatial", layer = "MPSZ-2019") %>%
+st_transform(crs = 3414)
 ```
 
-age group that one need to do, taken picture already， dont care about male or female
+### Task 3 read 2023 residential planning by subzone
+
+```{r}
+popdata <- read_csv("data/aspatial/respopagesextod2023.csv") 
+```
+
+```{r}
+popdata2023 <- popdata %>%
+  group_by(PA,SZ,AG) %>%
+  summarise(`POP` = sum(`Pop`)) %>%
+  ungroup() %>%
+  pivot_wider(names_from=AG, values_from = POP)
+
+colnames(popdata2023)
+```
+
+```{r}
+popdata2023 <- popdata2023 %>%
+  mutate(YOUNG = rowSums(.[3:6]) + rowSums(.[14])) %>%
+  mutate(`ECONOMY ACTIVE` = rowSums(.[7:13]) + rowSums(.[15])) %>%
+  mutate(`AGED` = rowSums(.[16:21])) %>%
+  mutate(`TOTAL` = rowSums(.[3:21])) %>%
+  mutate(`DEPENDENCY` = (`YOUNG` + `AGED`) / `ECONOMY ACTIVE`) %>%
+  select(`PA`, `SZ`, `YOUNG`, `ECONOMY ACTIVE`, `AGED`, `TOTAL`, `DEPENDENCY`)
+
+```
