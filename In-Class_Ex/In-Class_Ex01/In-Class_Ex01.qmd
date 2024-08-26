@@ -17,7 +17,7 @@ Install packages
 pacman::p_load(sf, tidyverse, dplyr, tmap)
 ```
 
-Task 1 #read kml file and ship file of master plan 2014 into the dataframe ....
+Task 1 #read kml file and ship file of master plan 2014 into the dataframe .
 
 ```{r}
 mpsz <- st_read(dsn = "data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
