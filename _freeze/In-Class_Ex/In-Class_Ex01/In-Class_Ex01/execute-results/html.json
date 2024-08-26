@@ -1,0 +1,14 @@
+{
+  "hash": "ccde97a739e2075b12084e6d18398d85",
+  "result": {
+    "markdown": "---\ntitle: \"In-Class_Ex01\"\nformat: html\neditor: visual\ndate: 26 Aug 2024\ndate-modified: 26 Aug 2024\nexecute: \n  eval: true\n  echo: true\n  message: false\n  freeze: true\n---\n\n\nInstall packages\n\n\n::: {.cell}\n\n```{.r .cell-code}\npacman::p_load(sf, tidyverse, dplyr, tmap)\n```\n:::\n\n\nTask 1 #read kml file and ship file of master plan 2014 into the dataframe\n\n\n::: {.cell}\n\n```{.r .cell-code}\nmpsz <- st_read(dsn = \"data/geospatial\", layer = \"MP14_SUBZONE_WEB_PL\")\n```\n\n::: {.cell-output .cell-output-stdout}\n```\nReading layer `MP14_SUBZONE_WEB_PL' from data source \n  `C:\\Users\\Jiany\\maxliujy\\geospatialanalytics\\In-Class_Ex\\In-Class_Ex01\\data\\geospatial' \n  using driver `ESRI Shapefile'\nSimple feature collection with 323 features and 15 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 2667.538 ymin: 15748.72 xmax: 56396.44 ymax: 50256.33\nProjected CRS: SVY21\n```\n:::\n:::\n\n::: {.cell}\n\n:::\n\n\nmpsz_kml \\<- st_read(\"data/geospatial/MasterPlan2014SubzoneBoundaryWebKML.kml\")\n\ndoesn't work\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

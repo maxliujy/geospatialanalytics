@@ -33,8 +33,7 @@ Data used for this assignment are sourced from publicly available datasets:
 ### Install and load necessary packages
 
 ```{r}
-
-pacman::p_load(sf, tidyverse, dplyr)
+pacman::p_load(sf, tidyverse, dplyr, tmap)
 ```
 
 The p_load function from the pacman package is used to install and load the sf and tidyverse packages into the R environment.
@@ -46,7 +45,7 @@ In this section, geospatial data are imported using the sf package:
 ### Import polygon feature data
 
 ```{r}
-#| echo: false
+
 mpsz <- st_read(dsn = "data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
 
 ```
@@ -54,7 +53,6 @@ mpsz <- st_read(dsn = "data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
 ### Import polyline feature data
 
 ```{r}
-#| echo: false
 cyclingpath <- st_read(dsn = "data/geospatial", layer = "CyclingPathGazette")
 
 ```
