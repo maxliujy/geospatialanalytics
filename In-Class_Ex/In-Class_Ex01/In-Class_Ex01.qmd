@@ -38,6 +38,7 @@ mpsz2019_kml <- st_read("data/geospatial/MasterPlan2019SubzoneBoundaryNoSeaKML.k
 mpsz2019_kml <- st_read("data/geospatial/MasterPlan2019SubzoneBoundaryNoSeaKML.kml")
 
 ```
+
 ```{r}
 #cannot find the shp file online
 #transformation of coordinate system
